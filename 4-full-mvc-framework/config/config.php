@@ -1,5 +1,18 @@
 <?php
 
+
+/**
+ * Config Checklist
+ *
+ * Site URL
+ * DB Configs
+ * Site Name
+ * Mandrill API Key for Email
+ * Stripe API for Payments
+ * Email Content - specifically the from email address, name, and body content.
+ */
+
+
 /**
  * THIS IS THE CONFIGURATION FILE
  * 
@@ -13,7 +26,44 @@
  * if you are using a (differen) port, then put this in here, like http://mydomain:8888/mvc/
  * TODO: when not using subfolder, is the trailing slash important ?
  */
-define('URL', 'http://127.0.0.1/php-login/4-full-mvc-framework/');
+
+/**
+ * Dev Config
+ */
+
+define('URL', 'http://localhost:8888/php-login/4-full-mvc-framework/');
+
+define('COOKIE_DOMAIN', '.127.0.0.1'); // the domain where the cookie is valid for
+
+define('DB_TYPE', 'mysql');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'PHP-LOGIN-DBNAME');
+define('DB_USER', 'root');
+define('DB_PASS', 'root');
+
+define('SITE_NAME', 'SITE NAME-DEV');
+define('SITE_TITLE', 'SITE TITLE-DEV');
+
+
+
+/**
+ * PROD Config
+ *
+
+define('URL', 'PUBLIC PRODUCTION URL');
+
+define('COOKIE_DOMAIN', '.PUBLIC PRODUCTION DOMAIN'); // the domain where the cookie is valid for
+
+define('DB_TYPE', 'mysql');
+define('DB_HOST', 'PUBLIC MYSQL DOMAIN');
+define('DB_NAME', 'MYSQL DB NAME');
+define('DB_USER', 'MYSQL USERNAME');
+define('DB_PASS', 'MYSQL PASSWORD');
+
+define('SITE_NAME', 'SITE NAME');
+define('SITE_TITLE', 'SITE TITLE');
+*/
+
 
 
 /**
@@ -46,29 +96,7 @@ define('USE_GRAVATARS', false);
  * @see php.net/manual/en/function.setcookie.php
  */
 define('COOKIE_RUNTIME', 1209600); // 1209600 seconds = 2 weeks
-define('COOKIE_DOMAIN', '.127.0.0.1'); // the domain where the cookie is valid for
 
-/**
- * Configuration for: Database
- * This is the place where you define your database credentials, type etc.
- * 
- * database type
- * define('DB_TYPE', 'mysql');
- * database host, usually it's "127.0.0.1" or "localhost", some servers also need port info, like "127.0.0.1:8080"
- * define('DB_HOST', '127.0.0.1');
- * name of the database. please note: database and database table are not the same thing!
- * define('DB_NAME', 'login');
- * user for your database. the user needs to have rights for SELECT, UPDATE, DELETE and INSERT
- * By the way, it's bad style to use "root", but for development it will work
- * define('DB_USER', 'root');
- * The password of the above user
- * define('DB_PASS', 'xxx');
- */
-define('DB_TYPE', 'mysql');
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'login');
-define('DB_USER', 'root');
-define('DB_PASS', 'mysql');
 
 
 /**
@@ -99,6 +127,19 @@ define("HASH_COST_FACTOR", "10");
 
 
 /**
+ * Stripe API 
+ * 
+ * Stripe API Keys defined
+ */
+
+// TEST APIs
+//define("STRIPE_TEST_SECRET_KEY", "sk_test_");
+//define("STRIPE_TEST_PUBLIC_KEY", "pk_test_");
+//define("STRIPE_LIVE_SECRET_KEY", "sk_live_");
+//define("STRIPE_LIVE_PUBLIC_KEY", "pk_live_");
+
+
+/**
  * Configuration for: Email server credentials
  * 
  * Here you can define how you want to send emails.
@@ -122,13 +163,16 @@ define("HASH_COST_FACTOR", "10");
  * It's really recommended to use SMTP!
  * 
  */
-define("EMAIL_USE_SMTP", false);
-define("EMAIL_SMTP_HOST", 'yourhost');
-define("EMAIL_SMTP_AUTH", true); // leave this true until your SMTP can be used without login
-define("EMAIL_SMTP_USERNAME", 'yourusername');
-define("EMAIL_SMTP_PASSWORD", 'yourpassword');
-define("EMAIL_SMTP_PORT", 465);
-define("EMAIL_SMTP_ENCRYPTION", 'ssl'); 
+
+
+/**
+ * MANDRILL EMAIL API
+ * Even more highly recommended to use this.  Avoid crappy SMTP Errors.
+ * Just do it right.  
+ * If 'Use Mandrill' set to true, it will override all other email settings 
+ */
+define("EMAIL_USE_MANDRILL", true);
+define("EMAIL_MANDRILL_APIKEY", 'MANDRILL APIKEY');
 
 
 /**
@@ -153,6 +197,9 @@ define("EMAIL_SMTP_ENCRYPTION", 'ssl');
  * define("EMAIL_VERIFICATION_SUBJECT", "Account Activation for PROJECT XY");
  * define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your account:");
  */
+define("EMAIL_DEFAULT_FROM_EMAIL", "noreply@example.com");
+define("EMAIL_DEFAULT_FROM_NAME", "My Project");
+
 define("EMAIL_PASSWORDRESET_URL", URL . "login/verifypasswordrequest");
 define("EMAIL_PASSWORDRESET_FROM_EMAIL", "noreply@example.com");
 define("EMAIL_PASSWORDRESET_FROM_NAME", "My Project");
@@ -165,59 +212,63 @@ define("EMAIL_VERIFICATION_FROM_NAME", "My Project");
 define("EMAIL_VERIFICATION_SUBJECT", "Account Activation for PROJECT XY");
 define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your account: ");
 
+define("EMAIL_PURCHASE_THANKS_CONTENT", "Thank you so much for your purchase!  Your support helps Young Life reach kids in Arizona.  <br/><br/>For more information about AZ Team YL, go to http://azteamyl.com");
+
+
 /**
  * Configuration for: Error messages and notices
  * 
  * In this project, the error messages, notices etc are alltogether called "feedback".
  */
-define("FEEDBACK_PASSWORD_WRONG_3_TIMES", "You have typed in a wrong password 3 or more times already. Please wait <span id='failed-login-countdown-value'>30</span> seconds to try again.");
-define("FEEDBACK_ACCOUNT_NOT_ACTIVATED_YET", "Your account is not activated yet. Please click on the confirm link in the mail.");
-define("FEEDBACK_PASSWORD_WRONG", "Password was wrong.");
-define("FEEDBACK_USER_DOES_NOT_EXIST", "This user does not exist.");
-define("FEEDBACK_USERNAME_FIELD_EMPTY", "Username field was empty.");
-define("FEEDBACK_PASSWORD_FIELD_EMPTY", "Password field was empty.");
-define("FEEDBACK_EMAIL_FIELD_EMPTY", "Email and passwords fields were empty.");
-define("FEEDBACK_EMAIL_AND_PASSWORD_FIELDS_EMPTY", "Email field was empty.");
-define("FEEDBACK_USERNAME_SAME_AS_OLD_ONE", "Sorry, that username is the same as your current one. Please choose another one.");
-define("FEEDBACK_USERNAME_ALREADY_TAKEN", "Sorry, that username is already taken. Please choose another one.");
-define("FEEDBACK_USERNAME_CHANGE_SUCCESSFUL", "Your username has been changed successfully.");
-define("FEEDBACK_USERNAME_AND_PASSWORD_FIELD_EMPTY", "Username and password fields were empty.");
-define("FEEDBACK_USERNAME_DOES_NOT_FIT_PATTERN", "Username does not fit the name sheme: only a-Z and numbers are allowed, 2 to 64 characters.");
-define("FEEDBACK_EMAIL_DOES_NOT_FIT_PATTERN", "Sorry, your chosen email does not fit into the email naming pattern.");
-define("FEEDBACK_EMAIL_SAME_AS_OLD_ONE", "Sorry, that email address is the same as your current one. Please choose another one.");
-define("FEEDBACK_EMAIL_CHANGE_SUCCESSFUL", "Your email address has been changed successfully.");
-define("FEEDBACK_CAPTCHA_WRONG", "The entered captcha security characters were wrong.");
-define("FEEDBACK_PASSWORD_REPEAT_WRONG", "Password and password repeat are not the same.");
-define("FEEDBACK_PASSWORD_TOO_SHORT", "Password has a minimum length of 6 characters.");
-define("FEEDBACK_USERNAME_TOO_SHORT_OR_TOO_LONG", "Username cannot be shorter than 2 or longer than 64 characters.");
-define("FEEDBACK_EMAIL_TOO_LONG", "Email cannot be longer than 64 characters.");
-define("FEEDBACK_ACCOUNT_SUCCESSFULLY_CREATED", "Your account has been created successfully and we have sent you an email. Please click the VERIFICATION LINK within that mail.");
-define("FEEDBACK_VERIFICATION_MAIL_SENDING_FAILED", "Sorry, we could not send you an verification mail. Your account has NOT been created.");
-define("FEEDBACK_ACCOUNT_CREATION_FAILED", "Sorry, your registration failed. Please go back and try again.");
-define("FEEDBACK_VERIFICATION_MAIL_SENDING_ERROR", "Verification mail could not be sent due to: ");
-define("FEEDBACK_VERIFICATION_MAIL_SENDING_SUCCESSFUL", "A verification mail has been sent successfully.");
-define("FEEDBACK_ACCOUNT_ACTIVATION_SUCCESSFUL", "Activation was successful! You can now log in.");
 define("FEEDBACK_ACCOUNT_ACTIVATION_FAILED", "Sorry, no such id/verification code combination here...");
-define("FEEDBACK_AVATAR_UPLOAD_SUCCESSFUL", "Avatar upload was successful.");
-define("FEEDBACK_AVATAR_UPLOAD_WRONG_TYPE", "Only JPEG and PNG files are supported.");
-define("FEEDBACK_AVATAR_UPLOAD_TOO_SMALL", "Avatar source file's width/height is too small. Needs to be 100x100 pixel minimum.");
-define("FEEDBACK_AVATAR_UPLOAD_TOO_BIG", "Avatar source file is too big. 5 Megabyte is the maximum.");
-define("FEEDBACK_AVATAR_FOLDER_NOT_WRITEABLE", "Avatar folder is not writeable. Please change this via chmod 775 or 777.");
-define("FEEDBACK_PASSWORD_RESET_TOKEN_FAIL", "Could not write token to database.");
-define("FEEDBACK_PASSWORD_RESET_MAIL_SENDING_ERROR", "Password reset mail could not be sent due to: ");
-define("FEEDBACK_PASSWORD_RESET_MAIL_SENDING_SUCCESSFUL", "A password reset mail has been sent successfully.");
-define("FEEDBACK_PASSWORD_RESET_LINK_EXPIRED", "Your reset link has expired. Please use the reset link within one hour.");
-define("FEEDBACK_PASSWORD_RESET_COMBINATION_DOES_NOT_EXIST", "Username/Verification code combination does not exist.");
-define("FEEDBACK_PASSWORD_CHANGE_SUCCESSFUL", "Password successfully changed.");
-define("FEEDBACK_PASSWORD_CHANGE_FAILED", "Sorry, your password changing failed.");
-define("FEEDBACK_ACCOUNT_UPGRADE_SUCCESSFUL", "Account upgrade was successful.");
-define("FEEDBACK_ACCOUNT_UPGRADE_FAILED", "Account upgrade failed.");
-define("FEEDBACK_ACCOUNT_DOWNGRADE_SUCCESSFUL", "Account downgrade was successful.");
+define("FEEDBACK_ACCOUNT_ACTIVATION_SUCCESSFUL", "Activation was successful! You can now log in.");
+define("FEEDBACK_ACCOUNT_CREATION_FAILED", "Sorry, your registration failed. Please go back and try again.");
 define("FEEDBACK_ACCOUNT_DOWNGRADE_FAILED", "Account downgrade failed.");
-define("FEEDBACK_NOTE_CREATION_FAILED", "Note creation failed.");
-define("FEEDBACK_NOTE_EDITING_FAILED", "Note editing failed.");
-define("FEEDBACK_NOTE_DELETION_FAILED", "Note deletion failed.");
+define("FEEDBACK_ACCOUNT_DOWNGRADE_SUCCESSFUL", "Account downgrade was successful.");
+define("FEEDBACK_ACCOUNT_NOT_ACTIVATED_YET", "Your account is not activated yet. Please click on the confirm link in the mail.");
+define("FEEDBACK_ACCOUNT_SUCCESSFULLY_CREATED", "Your account has been created successfully and we have sent you an email. Please click the VERIFICATION LINK within that mail.");
+define("FEEDBACK_ACCOUNT_UPGRADE_FAILED", "Account upgrade failed.");
+define("FEEDBACK_ACCOUNT_UPGRADE_SUCCESSFUL", "Account upgrade was successful.");
+define("FEEDBACK_AVATAR_FOLDER_NOT_WRITEABLE", "Avatar folder is not writeable. Please change this via chmod 775 or 777.");
+define("FEEDBACK_AVATAR_UPLOAD_SUCCESSFUL", "Avatar upload was successful.");
+define("FEEDBACK_AVATAR_UPLOAD_TOO_BIG", "Avatar source file is too big. 5 Megabyte is the maximum.");
+define("FEEDBACK_AVATAR_UPLOAD_TOO_SMALL", "Avatar source file's width/height is too small. Needs to be 100x100 pixel minimum.");
+define("FEEDBACK_AVATAR_UPLOAD_WRONG_TYPE", "Only JPEG and PNG files are supported.");
+define("FEEDBACK_CAPTCHA_WRONG", "The entered captcha security characters were wrong.");
 define("FEEDBACK_COOKIE_INVALID", "Your remember-me-cookie is invalid.");
 define("FEEDBACK_COOKIE_LOGIN_SUCCESSFUL", "You were successfully logged in via the remember-me-cookie.");
+define("FEEDBACK_EMAIL_AND_PASSWORD_FIELDS_EMPTY", "Email field was empty.");
+define("FEEDBACK_EMAIL_CHANGE_SUCCESSFUL", "Your email address has been changed successfully.");
+define("FEEDBACK_EMAIL_DOES_NOT_FIT_PATTERN", "Sorry, your chosen email does not fit into the email naming pattern.");
+define("FEEDBACK_EMAIL_FIELD_EMPTY", "Email and passwords fields were empty.");
+define("FEEDBACK_EMAIL_SAME_AS_OLD_ONE", "Sorry, that email address is the same as your current one. Please choose another one.");
+define("FEEDBACK_EMAIL_TOO_LONG", "Email cannot be longer than 64 characters.");
+define("FEEDBACK_VERIFICATION_MAIL_ERROR_MADNRILL_NOEXISTS", "Could not find Mandrill API Library file.");
+define("FEEDBACK_NOTE_CREATION_FAILED", "Note creation failed.");
+define("FEEDBACK_NOTE_DELETION_FAILED", "Note deletion failed.");
+define("FEEDBACK_NOTE_EDITING_FAILED", "Note editing failed.");
+define("FEEDBACK_PASSWORD_CHANGE_FAILED", "Sorry, your password changing failed.");
+define("FEEDBACK_PASSWORD_CHANGE_SUCCESSFUL", "Password successfully changed.");
+define("FEEDBACK_PASSWORD_FIELD_EMPTY", "Password field was empty.");
+define("FEEDBACK_PASSWORD_REPEAT_WRONG", "Password and password repeat are not the same.");
+define("FEEDBACK_PASSWORD_RESET_COMBINATION_DOES_NOT_EXIST", "Username/Verification code combination does not exist.");
+define("FEEDBACK_PASSWORD_RESET_LINK_EXPIRED", "Your reset link has expired. Please use the reset link within one hour.");
+define("FEEDBACK_PASSWORD_RESET_MAIL_SENDING_ERROR", "Password reset mail could not be sent due to: ");
+define("FEEDBACK_PASSWORD_RESET_MAIL_SENDING_SUCCESSFUL", "A password reset mail has been sent successfully.");
+define("FEEDBACK_PASSWORD_RESET_TOKEN_FAIL", "Could not write token to database.");
+define("FEEDBACK_PASSWORD_TOO_SHORT", "Password has a minimum length of 6 characters.");
+define("FEEDBACK_PASSWORD_WRONG", "Password was wrong.");
+define("FEEDBACK_PASSWORD_WRONG_3_TIMES", "You have typed in a wrong password 3 or more times already. Please wait <span id='failed-login-countdown-value'>30</span> seconds to try again.");
+define("FEEDBACK_USER_DOES_NOT_EXIST", "This user does not exist.");
+define("FEEDBACK_USERNAME_ALREADY_TAKEN", "Sorry, that username is already taken. Please choose another one.");
+define("FEEDBACK_USERNAME_AND_PASSWORD_FIELD_EMPTY", "Username and password fields were empty.");
+define("FEEDBACK_USERNAME_CHANGE_SUCCESSFUL", "Your username has been changed successfully.");
+define("FEEDBACK_USERNAME_DOES_NOT_FIT_PATTERN", "Username does not fit the name sheme: only a-Z and numbers are allowed, 2 to 64 characters.");
+define("FEEDBACK_USERNAME_FIELD_EMPTY", "Username field was empty.");
+define("FEEDBACK_USERNAME_SAME_AS_OLD_ONE", "Sorry, that username is the same as your current one. Please choose another one.");
+define("FEEDBACK_USERNAME_TOO_SHORT_OR_TOO_LONG", "Username cannot be shorter than 2 or longer than 64 characters.");
+define("FEEDBACK_VERIFICATION_MAIL_SENDING_ERROR", "Verification mail could not be sent due to: ");
+define("FEEDBACK_VERIFICATION_MAIL_SENDING_FAILED", "Sorry, we could not send you an verification mail. Your account has NOT been created.");
+define("FEEDBACK_VERIFICATION_MAIL_SENDING_SUCCESSFUL", "A verification mail has been sent successfully.");
 
 define("FEEDBACK_UNKNOWN_ERROR", "Unknown error occured!");

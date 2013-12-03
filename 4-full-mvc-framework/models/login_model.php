@@ -448,13 +448,7 @@ class Login_Model extends Model
      */
     public function registerNewUser() {
         
-        $captcha = new Captcha();
-        
-        if (!$captcha->checkCaptcha()) {
-        
-            $this->errors[] = FEEDBACK_CAPTCHA_WRONG;
-            
-        } elseif (empty($_POST['user_name'])) {
+        if (empty($_POST['user_name'])) {
           
             $this->errors[] = FEEDBACK_USERNAME_FIELD_EMPTY;
 
@@ -589,52 +583,108 @@ class Login_Model extends Model
      * @return boolean gives back true if mail has been sent, gives back false if no mail could been sent
      */    
     private function sendVerificationEmail() {
-        
-        $mail = new PHPMailer;
 
         // please look into the config/config.php for much more info on how to use this!
         // use SMTP or use mail()
-        if (EMAIL_USE_SMTP) {
-            
-            // Set mailer to use SMTP
-            $mail->IsSMTP();
-            //useful for debugging, shows full SMTP errors
-            //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
-            // Enable SMTP authentication
-            $mail->SMTPAuth = EMAIL_SMTP_AUTH;                               
-            // Enable encryption, usually SSL/TLS
-            if (defined(EMAIL_SMTP_ENCRYPTION)) {                
-                $mail->SMTPSecure = EMAIL_SMTP_ENCRYPTION;                              
-            }
-            // Specify host server
-            $mail->Host = EMAIL_SMTP_HOST;  
-            $mail->Username = EMAIL_SMTP_USERNAME;                            
-            $mail->Password = EMAIL_SMTP_PASSWORD;                      
-            $mail->Port = EMAIL_SMTP_PORT;       
-            
-        } else {
-            
-            $mail->IsMail();            
-        }
-        
-        $mail->From = EMAIL_VERIFICATION_FROM_EMAIL;
-        $mail->FromName = EMAIL_VERIFICATION_FROM_NAME;
-        $mail->AddAddress($this->user_email);
-        $mail->Subject = EMAIL_VERIFICATION_SUBJECT;
-        $mail->Body    = EMAIL_VERIFICATION_CONTENT . EMAIL_VERIFICATION_URL.'/'.urlencode($this->user_id).'/'.urlencode($this->user_activation_hash);
+        if (EMAIL_USE_MANDRILL) {
+            if (file_exists(LIBS . 'mandrill-api-php/src/Mandrill.php')) {
+                require LIBS . 'mandrill-api-php/src/Mandrill.php'; 
 
-        if(!$mail->Send()) {
-            
-           $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_ERROR . $mail->ErrorInfo;
-           return false;
-           
+                try {
+                    $mandrill = new Mandrill(EMAIL_MANDRILL_APIKEY);
+
+                    $mandrill->From = EMAIL_VERIFICATION_FROM_EMAIL;
+                    $mandrill->FromName = EMAIL_VERIFICATION_FROM_NAME;
+                    $mandrill->Recipient_email = $this->user_email;
+                    $mandrill->Recipient_name = $this->user_name;
+                    $mandrill->Recipient_id = $this->user_id;
+                    $mandrill->Subject = EMAIL_VERIFICATION_SUBJECT;
+                    $mandrill->Body    = EMAIL_VERIFICATION_CONTENT . EMAIL_VERIFICATION_URL.'/'.urlencode($this->user_id).'/'.urlencode($this->user_activation_hash);
+
+                    $message = array(
+                        'text' => $mandrill->Body,
+                        'subject' => $mandrill->Subject,
+                        'from_email' => $mandrill->From,
+                        'from_name' => $mandrill->FromName,
+                        'to' => array(
+                            array(
+                                'email' => $mandrill->Recipient_email,
+                                'name' => $mandrill->Recipient_name
+                            )
+                        ),
+                        'headers' => array('Reply-To' => $mandrill->From),
+                        'important' => false,
+                        'track_opens' => true,
+                        'tags' => array('new_user')
+                    );
+                    $async = true;
+                    $ip_pool = ''; // unused
+                    $send_at = ''; // costs extra
+
+                    $result = $mandrill->messages->send($message, $async, $ip_pool, $send_at);
+                    
+                    if($result) {
+                        $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_SUCCESSFUL;
+                        return true;
+                    }
+
+                } catch(Mandrill_Error $e) {
+                    // Mandrill errors are thrown as exceptions
+                    $this->errors[] = 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+                    // A mandrill error occurred: Mandrill_Unknown_Subaccount - No subaccount exists with the id 'customer-123'
+                    return false;
+                }
+            } else {
+                $this->errors[] = FEEDBACK_VERIFICATION_MAIL_ERROR_MADNRILL_NOEXISTS;
+                return false;
+            }
+
+
         } else {
+            $mail = new PHPMailer;
             
-            $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_SUCCESSFUL;
-            return true;
+            if (EMAIL_USE_SMTP) {
+                // Set mailer to use SMTP
+                $mail->IsSMTP();
+                //useful for debugging, shows full SMTP errors
+                //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+                // Enable SMTP authentication
+                $mail->SMTPAuth = EMAIL_SMTP_AUTH;                               
+                // Enable encryption, usually SSL/TLS
+                if (defined(EMAIL_SMTP_ENCRYPTION)) {                
+                    $mail->SMTPSecure = EMAIL_SMTP_ENCRYPTION;                              
+                }
+                // Specify host server
+                $mail->Host = EMAIL_SMTP_HOST;  
+                $mail->Username = EMAIL_SMTP_USERNAME;                            
+                $mail->Password = EMAIL_SMTP_PASSWORD;                      
+                $mail->Port = EMAIL_SMTP_PORT;       
+                
+            } else {
+                
+                $mail->IsMail();            
+            }
             
+            $mail->From = EMAIL_VERIFICATION_FROM_EMAIL;
+            $mail->FromName = EMAIL_VERIFICATION_FROM_NAME;
+            $mail->AddAddress($this->user_email);
+            $mail->Subject = EMAIL_VERIFICATION_SUBJECT;
+            $mail->Body    = EMAIL_VERIFICATION_CONTENT . EMAIL_VERIFICATION_URL.'/'.urlencode($this->user_id).'/'.urlencode($this->user_activation_hash);
+
+            if(!$mail->Send()) {
+                
+               $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_ERROR . $mail->ErrorInfo;
+               return false;
+               
+            } else {
+                
+                $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_SUCCESSFUL;
+                return true;
+                
+            }
+            $this->errors[] = "mail sending error.  Not possible to email right now.  Please ask administrator for help configuring email functionality";
+            return false; // TEMPORARY - set to false in production
         }
-        
     }
     
     /**
@@ -787,57 +837,57 @@ class Login_Model extends Model
      */
     function resize_image($source_image, $destination_filename, $width = 44, $height = 44, $quality = 85, $crop = true) {
 
-	if ( ! $image_data = getimagesize( $source_image ) ) {
-		return false;
-	}
+    if ( ! $image_data = getimagesize( $source_image ) ) {
+        return false;
+    }
 
-	switch( $image_data['mime'] ) {
-		case 'image/gif':
-			$get_func = 'imagecreatefromgif';
-			$suffix = ".gif";
-		break;
-		case 'image/jpeg';
-			$get_func = 'imagecreatefromjpeg';
-			$suffix = ".jpg";
-		break;
-		case 'image/png':
-			$get_func = 'imagecreatefrompng';
-			$suffix = ".png";
-		break;
-	}
+    switch( $image_data['mime'] ) {
+        case 'image/gif':
+            $get_func = 'imagecreatefromgif';
+            $suffix = ".gif";
+        break;
+        case 'image/jpeg';
+            $get_func = 'imagecreatefromjpeg';
+            $suffix = ".jpg";
+        break;
+        case 'image/png':
+            $get_func = 'imagecreatefrompng';
+            $suffix = ".png";
+        break;
+    }
 
-	$img_original = call_user_func( $get_func, $source_image );
-	$old_width = $image_data[0];
-	$old_height = $image_data[1];
-	$new_width = $width;
-	$new_height = $height;
-	$src_x = 0;
-	$src_y = 0;
-	$current_ratio = round( $old_width / $old_height, 2 );
-	$desired_ratio_after = round( $width / $height, 2 );
-	$desired_ratio_before = round( $height / $width, 2 );
+    $img_original = call_user_func( $get_func, $source_image );
+    $old_width = $image_data[0];
+    $old_height = $image_data[1];
+    $new_width = $width;
+    $new_height = $height;
+    $src_x = 0;
+    $src_y = 0;
+    $current_ratio = round( $old_width / $old_height, 2 );
+    $desired_ratio_after = round( $width / $height, 2 );
+    $desired_ratio_before = round( $height / $width, 2 );
 
-	if ( $old_width < $width || $old_height < $height ) {
+    if ( $old_width < $width || $old_height < $height ) {
 
-		 // The desired image size is bigger than the original image. 
-		 // Best not to do anything at all really.
-		return false;
-	}
+         // The desired image size is bigger than the original image. 
+         // Best not to do anything at all really.
+        return false;
+    }
 
-	// If the crop option is left on, it will take an image and best fit it
-	// so it will always come out the exact specified size.
-	if ( $crop ) {
+    // If the crop option is left on, it will take an image and best fit it
+    // so it will always come out the exact specified size.
+    if ( $crop ) {
             
-		// create empty image of the specified size
-		$new_image = imagecreatetruecolor( $width, $height );
+        // create empty image of the specified size
+        $new_image = imagecreatetruecolor( $width, $height );
 
-		// Landscape Image
-		if( $current_ratio > $desired_ratio_after ) {
-			$new_width = $old_width * $height / $old_height;
-		}
+        // Landscape Image
+        if( $current_ratio > $desired_ratio_after ) {
+            $new_width = $old_width * $height / $old_height;
+        }
 
-		// Nearly square ratio image.
-		if ( $current_ratio > $desired_ratio_before && $current_ratio < $desired_ratio_after ) {
+        // Nearly square ratio image.
+        if ( $current_ratio > $desired_ratio_before && $current_ratio < $desired_ratio_after ) {
                     
                     if ( $old_width > $old_height ) {                        
                         $new_height = max( $width, $height );
@@ -845,49 +895,49 @@ class Login_Model extends Model
                     } else {
                         $new_height = $old_height * $width / $old_width;
                     }
-		}
+        }
 
-		// Portrait sized image
-		if ( $current_ratio < $desired_ratio_before  ) {
+        // Portrait sized image
+        if ( $current_ratio < $desired_ratio_before  ) {
                     $new_height = $old_height * $width / $old_width;
-		}
+        }
 
-		// Find out the ratio of the original photo to it's new, thumbnail-based size
-		// for both the width and the height. It's used to find out where to crop.
-		$width_ratio = $old_width / $new_width;
-		$height_ratio = $old_height / $new_height;
+        // Find out the ratio of the original photo to it's new, thumbnail-based size
+        // for both the width and the height. It's used to find out where to crop.
+        $width_ratio = $old_width / $new_width;
+        $height_ratio = $old_height / $new_height;
 
-		// Calculate where to crop based on the center of the image
-		$src_x = floor( ( ( $new_width - $width ) / 2 ) * $width_ratio );
-		$src_y = round( ( ( $new_height - $height ) / 2 ) * $height_ratio );
-	}
-	// Don't crop the image, just resize it proportionally
-	else {
+        // Calculate where to crop based on the center of the image
+        $src_x = floor( ( ( $new_width - $width ) / 2 ) * $width_ratio );
+        $src_y = round( ( ( $new_height - $height ) / 2 ) * $height_ratio );
+    }
+    // Don't crop the image, just resize it proportionally
+    else {
             
-		if ( $old_width > $old_height ) {
+        if ( $old_width > $old_height ) {
                     $ratio = max( $old_width, $old_height ) / max( $width, $height );
-		} else {
+        } else {
                     $ratio = max( $old_width, $old_height ) / min( $width, $height );
-		}
+        }
 
-		$new_width = $old_width / $ratio;
-		$new_height = $old_height / $ratio;
+        $new_width = $old_width / $ratio;
+        $new_height = $old_height / $ratio;
 
-		$new_image = imagecreatetruecolor( $new_width, $new_height );
-	}
+        $new_image = imagecreatetruecolor( $new_width, $new_height );
+    }
 
-	// Where all the real magic happens
-	imagecopyresampled( $new_image, $img_original, 0, 0, $src_x, $src_y, $new_width, $new_height, $old_width, $old_height );
+    // Where all the real magic happens
+    imagecopyresampled( $new_image, $img_original, 0, 0, $src_x, $src_y, $new_width, $new_height, $old_width, $old_height );
 
-	// Save it as a JPG File with our $destination_filename param.
-	imagejpeg( $new_image, $destination_filename, $quality  );
+    // Save it as a JPG File with our $destination_filename param.
+    imagejpeg( $new_image, $destination_filename, $quality  );
 
-	// Destroy the evidence!
-	imagedestroy( $new_image );
-	imagedestroy( $img_original );
+    // Destroy the evidence!
+    imagedestroy( $new_image );
+    imagedestroy( $img_original );
 
-	// Return true because it worked and we're happy. Let the dancing commence!
-	return true;
+    // Return true because it worked and we're happy. Let the dancing commence!
+    return true;
     }
     
     /**

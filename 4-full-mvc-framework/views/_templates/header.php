@@ -1,93 +1,39 @@
 <!doctype html>
 <html>
 <head>
-	<title>My Application</title>
+	<title><?php echo SITE_TITLE; ?></title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="<?php echo URL; ?>public/css/reset.css" />
-	<link rel="stylesheet" href="<?php echo URL; ?>public/css/default.css" />
+	
+    <!-- Main stylesheet imports bootstrap css and adds custom 
+    <link href='http://fonts.googleapis.com/css?family=Lato|Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'> -->
+    <link rel="stylesheet" href="<?php echo URL; ?>public/css/style.css" />
 	<script type="text/javascript" src="<?php echo URL; ?>public/js/jquery-1.10.1.min.js"></script>
 	<script type="text/javascript" src="<?php echo URL; ?>public/js/custom.js"></script>
 </head>
 <body>
     
-    <div class="debug-helper-box">
-        DEBUG HELPER: you are in the view: <?php echo $filename; ?>
-    </div>
+    <header>
+      <a href="<?php echo URL; ?>" class="logo"><?php echo SITE_NAME; ?></a>
 
-    <div class='title-box'>
-        <a href="<?php echo URL; ?>">My Application</a>
-    </div>
-    
-    <div class="header">
+      <nav>
+        <?php if (Session::get('user_logged_in') == true):?>
+          <a id="showmobilemenu" class="mobile-menu">Menu</a>
+          <a href="<?php echo URL; ?>login/logout" class="hidden-lt600">Logout</a>
+        <?php endif; ?>  
+
+
+        <!-- for not logged in users -->
+        <?php if (Session::get('user_logged_in') == false):?>
+          <a href="<?php echo URL; ?>login/index" class="<?php if ($this->checkForActiveControllerAndAction($filename, "login/index")) { echo 'active'; } ?>" >Login</a>
+        <?php endif; ?>
+
+      </nav>
+
+    </header>
+    <div class="page">
 
         <div class="header_left_box">
-        <ul id="menu">
-            <li <?php if ($this->checkForActiveController($filename, "index")) { echo ' class="active" '; } ?> >
-                <a href="<?php echo URL; ?>index/index">Index</a>
-            </li>
-            <li <?php if ($this->checkForActiveController($filename, "help")) { echo ' class="active" '; } ?> >
-                <a href="<?php echo URL; ?>help/index">Help</a>
-            </li>
-            <li <?php if ($this->checkForActiveController($filename, "overview")) { echo ' class="active" '; } ?> >
-                <a href="<?php echo URL; ?>overview/index">Overview</a>
-            </li>            
-            <?php if (Session::get('user_logged_in') == true):?>
-            <li <?php if ($this->checkForActiveController($filename, "dashboard")) { echo ' class="active" '; } ?> >
-                <a href="<?php echo URL; ?>dashboard/index">Dashboard</a>	
-            </li>   
-            <?php endif; ?>                    
-            <?php if (Session::get('user_logged_in') == true):?>
-            <li <?php if ($this->checkForActiveController($filename, "note")) { echo ' class="active" '; } ?> >
-                <a href="<?php echo URL; ?>note/index">My Notes</a>
-            </li>   
-            <?php endif; ?>                    
-
-
-            <?php if (Session::get('user_logged_in') == true):?>
-                <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                    <!--<a href="#">My Account</a>-->
-                    <a href="<?php echo URL; ?>login/showprofile">My Account</a>
-                    <ul class="sub-menu">
-                        <!--
-                        <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                            <a href="<?php echo URL; ?>login/showprofile">Show my profile</a>
-                        </li>
-                        -->
-                        <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                            <a href="<?php echo URL; ?>login/changeaccounttype">Change account type</a>
-                        </li>                           
-                        <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                            <a href="<?php echo URL; ?>login/uploadavatar">Upload an avatar</a>
-                        </li>                          
-                        <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                            <a href="<?php echo URL; ?>login/editusername">Edit my username</a>
-                        </li>
-                        <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                            <a href="<?php echo URL; ?>login/edituseremail">Edit my email</a>
-                        </li>
-                        <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
-                            <a href="<?php echo URL; ?>login/logout">Logout</a>
-                        </li>
-                    </ul>
-                </li>
-            <?php endif; ?>          
-
-            <!-- for not logged in users -->
-            <?php if (Session::get('user_logged_in') == false):?>
-
-                <li <?php if ($this->checkForActiveControllerAndAction($filename, "login/index")) { echo ' class="active" '; } ?> >
-                    <a href="<?php echo URL; ?>login/index">Login</a>
-                </li>  
-                <li <?php if ($this->checkForActiveControllerAndAction($filename, "login/register")) { echo ' class="active" '; } ?> >
-                    <a href="<?php echo URL; ?>login/register">Register</a>
-                </li>         
-                <li <?php if ($this->checkForActiveControllerAndAction($filename, "login/requestpasswordreset")) { echo ' class="active" '; } ?> >
-                    <a href="<?php echo URL; ?>login/requestpasswordreset">Forgot my Password</a>
-                </li>
-
-            <?php endif; ?>
-
-        </ul>   
+         
         </div>
 
         <?php if (Session::get('user_logged_in') == true): ?>
@@ -110,5 +56,4 @@
 
         <div class="clear-both"></div>
 
-    </div>	
 	
