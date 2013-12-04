@@ -1,28 +1,28 @@
-<div class="content">
-
-    <h1>Change your username</h1>
-
+<section>
     <?php 
-
-    if (isset($this->errors)) {
-
-        foreach ($this->errors as $error) {
-            echo '<div class="system_message">'.$error.'</div>';
+        if (isset($this->errors)) {
+            foreach ($this->errors as $error) {
+                echo '<div class="system_message alert">'.$error.'</div>';
+            }
         }
-
-    }
-
     ?>
+    <div class="content">
+        <h1>Change your username</h1>
+        <form action="<?php echo URL; ?>login/editusername_action" method="post">
+            <label>
+                <em>Username</em>
+                <input type="text" name="user_name" value="<?php echo Session::get('user_name'); ?>" required />
+            </label>
 
-    <form action="<?php echo URL; ?>login/editusername_action" method="post">
+            <label>
+                <em>Confirm password</em>
+                <input type="password" name="user_password" required />
+            </label>
 
-        <label>New username</label>
-        <input type="text" name="user_name" required />
-
-        <label>Your password (to prove it's really YOU):</label>
-        <input type="password" name="user_password" required />
-
-        <input type="submit" value="Submit" />
-    </form>
-    
-</div>
+            <div class="buttons">
+                <input type="submit" value="Submit" class="btn"/>
+            </div>
+        </form>
+        
+    </div>
+</section>

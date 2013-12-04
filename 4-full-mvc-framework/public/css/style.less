@@ -18,7 +18,7 @@
 @black:     #1b1b1b;
 
 /* Main Variables */
-@primary:   #47484C;
+@primary:   @Blue;
 
 
 
@@ -613,14 +613,14 @@ table {
     -moz-box-shadow: rgba(0,0,0,0.2) 0 1px 2px;
     box-shadow: rgba(0,0,0,0.2) 0 1px 2px;
     background-color: #3774ff;
-    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, @primary), color-stop(100%, @MidGrey));
-    background: -webkit-linear-gradient(@primary,@MidGrey);
-    background: -moz-linear-gradient(@primary,@MidGrey);
-    background: -o-linear-gradient(@primary,@MidGrey);
-    background: linear-gradient(@primary,@MidGrey);
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, @linkblue), color-stop(100%, @linkhover));
+    background: -webkit-linear-gradient(@linkblue,@linkhover);
+    background: -moz-linear-gradient(@linkblue,@linkhover);
+    background: -o-linear-gradient(@linkblue,@linkhover);
+    background: linear-gradient(@linkblue,@linkhover);
 }
 .btn:hover, .btn:focus {
-    background: @MidGrey;
+    background: @linkhover;
     color: #fff;
     text-shadow: none;
 }
@@ -674,6 +674,22 @@ footer {
 
     a {
         color: @primary;
+    }
+
+    nav {
+        text-align: center;
+
+        ul {
+            display: block;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+
+            li {
+                display: inline-block;
+                padding: 10px;
+            }
+        }
     }
 }
 

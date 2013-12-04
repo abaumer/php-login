@@ -37,7 +37,7 @@ define('COOKIE_DOMAIN', '.127.0.0.1'); // the domain where the cookie is valid f
 
 define('DB_TYPE', 'mysql');
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'PHP-LOGIN-DBNAME');
+define('DB_NAME', 'login2');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
 

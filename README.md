@@ -1,3 +1,19 @@
+# Jumpsand Version of panique/php-login
+
+Major changes are to Styling, some html layout, config file
+
+Also adding Mandrill Emailing instead of relying on PHP Mailer, greatly improving email receive rates.
+
+Adding in Stripe API files.  Will hook those in later.
+
+## Jumpsand To Do's
+
+1. Add User management Page to add, edit and remove users
+2. Add all users to an "org" that groups users together
+3. Add stripe payment wall option to org level, allowing multiple levels of aubscription or free.
+4. Simplify the Header file!  Or at least clean it up a bit, it's wild in there.
+
+
 # PHP & MySQL Login
 
 Simple, lightweight and easy to use **Login Script for PHP** that comes in 4 different versions. From one-file version with SQLite database to full-featured MVC framework. Uses the ultra-modern & future-proof PHP 5.5. BLOWFISH hashing/salting functions (includes the official PHP 5.3 & PHP 5.4 compatibility pack, which makes those functions available in those versions too). Follow the project on **[Twitter](https://twitter.com/simplephplogin)**, **[Facebook](https://www.facebook.com/pages/PHP-Login-Script/461306677235868)**

@@ -1,36 +1,49 @@
-<div class="content">
-
-    <h1>Login</h1>
-
+<section>
     <?php 
-
     if (isset($this->errors)) {
-
         foreach ($this->errors as $error) {
-            echo '<div class="system_message">'.$error.'</div>';
+            echo '<div class="system_message alert">'.$error.'</div>';
         }
-
     }
-
     ?>
-    
-    <form action="<?php echo URL; ?>login/login" method="post">
+    <div class="content skinny">
+        <h1>Login</h1>
+        <form action="<?php echo URL; ?>login/login" method="post">
+            <header>
+                <h3>Login</h3>
+            </header>
 
-            <label>Username</label>
-            <input type="text" name="user_name" required />
+            <label>
+                <em>Username</em>
+                <input type="text" name="user_name" autofocus required autocomplete="off"/>
+            </label>
             
-            <label>Password</label>
-            <input type="password" name="user_password" required />
+            <label>
+                <em>Password</em>
+                <input type="password" name="user_password" required autocomplete="off"/>
+            </label>
             
-            <input type="checkbox" name="user_rememberme" style="float: left; min-width: 0; margin: 3px 10px 15px 0;" />
-            <label style="float:left; min-width: 0; font-size: 12px; color: #888;">Keep me logged in (for 2 weeks)</label>
-                                    
-            <input type="submit" style="float: none; clear: both;" />            
-            
-    </form>    
-    
-    <a href="<?php echo URL; ?>login/register">Register</a>
-    |
-    <a href="<?php echo URL; ?>login/requestpasswordreset">Forgot my Password</a>
-    
-</div>
+            <!--
+            <label>
+                <em>Remember me</em>
+                <div class="input-helper">
+                    <input type="checkbox" name="user_rememberme" />
+                </div>
+            </label>
+            -->
+                        
+            <div class="buttons">
+                <input type="submit" class="btn" />
+            </div>
+                
+        </form>    
+        
+        <div class="center">
+            <br/>
+            <a href="<?php echo URL; ?>login/register">Sign up</a>
+            |
+            <a href="<?php echo URL; ?>login/requestpasswordreset">Forgot my Password</a>
+        </div>
+        
+    </div>
+</section>

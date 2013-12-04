@@ -1,19 +1,18 @@
-<div class="content">
-
-    <h1>Verification</h1>
-
+<section>
     <?php 
-
     if (isset($this->errors)) {
-
         foreach ($this->errors as $error) {
-            echo '<div class="system_message">'.$error.'</div>';
+            echo '<div class="system_message alert">'.$error.'</div>';
         }
-
     }
-    
     ?>
-    
-    <a href="<?php echo URL; ?>login/index">Go to login</a>
-    
-</div>
+    <div class="content">
+        <h1>Verification</h1>
+        <div class="block center">
+            <br/>
+            <br/>
+            <a href="<?php echo URL; ?>login/index" class="btn">Go to login</a>
+            <br/><br/>
+        </div>
+    </div>
+</section>

@@ -55,7 +55,7 @@ a:hover {
 }
 body > header {
   background: #fff;
-  border-bottom: 1px solid #47484c;
+  border-bottom: 1px solid #145388;
   color: #fff;
   height: 4rem;
   position: fixed;
@@ -70,7 +70,7 @@ body > header a.logo {
   height: 100%;
   width: 200px;
   padding: .5rem;
-  color: #47484c;
+  color: #145388;
   font-size: 1.2rem;
   line-height: 2.8rem;
   border-right: 1px inset rgba(0, 0, 0, 0.2);
@@ -106,7 +106,7 @@ body > header nav a {
   display: inline-block;
   position: relative;
   text-align: right;
-  color: #47484c;
+  color: #145388;
   text-decoration: none;
   padding: .4rem 1rem;
   height: 4rem;
@@ -117,7 +117,7 @@ body > header nav a {
 body > header nav a:hover,
 body > header nav a.shown {
   color: #fff;
-  background: #47484c;
+  background: #145388;
 }
 body > header nav a img {
   width: 36px;
@@ -136,7 +136,7 @@ body > header nav .header_right_box {
   width: 100%;
   padding: .5rem;
   background: #1b1b1b;
-  color: #47484c;
+  color: #145388;
   text-align: center;
 }
 #overlay {
@@ -386,7 +386,6 @@ form .label input[type='number'],
 form > label textarea,
 form .label textarea {
   /*override bootstrap, it should be taken out instead of added and removed */
-
   height: auto;
   width: 50%;
   color: #1b1b1b;
@@ -520,7 +519,7 @@ table td.a1 {
 table td.a2 {
   text-align: center;
   color: #fff;
-  background: #47484c;
+  background: #145388;
 }
 table td.a3 {
   text-align: center;
@@ -540,7 +539,7 @@ table tfoot tr {
   font-size: 1.2rem;
   line-height: 1;
   text-align: center;
-  background: #47484c;
+  background: #145388;
   color: #fff;
   border: 0;
   border-radius: 3px;
@@ -554,25 +553,25 @@ table tfoot tr {
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px;
   background-color: #3774ff;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #47484c), color-stop(100%, #cbcbcb));
-  background: -webkit-linear-gradient(#47484c, #cbcbcb);
-  background: -moz-linear-gradient(#47484c, #cbcbcb);
-  background: -o-linear-gradient(#47484c, #cbcbcb);
-  background: linear-gradient(#47484c, #cbcbcb);
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #0088cc), color-stop(100%, #005580));
+  background: -webkit-linear-gradient(#0088cc, #005580);
+  background: -moz-linear-gradient(#0088cc, #005580);
+  background: -o-linear-gradient(#0088cc, #005580);
+  background: linear-gradient(#0088cc, #005580);
 }
 .btn:hover,
 .btn:focus {
-  background: #cbcbcb;
+  background: #005580;
   color: #fff;
   text-shadow: none;
 }
 .btn:active {
-  background: #47484c;
+  background: #145388;
   color: #fff;
   text-shadow: none;
 }
 .btn-light {
-  color: #47484c;
+  color: #145388;
   text-shadow: rgba(255, 255, 255, 0.6) 0 1px 0;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
@@ -613,7 +612,20 @@ footer {
   margin-bottom: 0;
 }
 footer a {
-  color: #47484c;
+  color: #145388;
+}
+footer nav {
+  text-align: center;
+}
+footer nav ul {
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+footer nav ul li {
+  display: inline-block;
+  padding: 10px;
 }
 /**
  * REsponsive Show & Hide 
