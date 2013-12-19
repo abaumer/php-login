@@ -14,6 +14,15 @@ Adding in Stripe API files.  Will hook those in later.
 4. Simplify the Header file!  Or at least clean it up a bit, it's wild in there.
 
 
+-----
+-----
+## ****Below: From Panique's Original Project ReadMe.**** ##
+-----
+
+For more details and updates - https://github.com/panique/php-login
+
+-----
+
 # PHP & MySQL Login
 
 Simple, lightweight and easy to use **Login Script for PHP** that comes in 4 different versions. From one-file version with SQLite database to full-featured MVC framework. Uses the ultra-modern & future-proof PHP 5.5. BLOWFISH hashing/salting functions (includes the official PHP 5.3 & PHP 5.4 compatibility pack, which makes those functions available in those versions too). Follow the project on **[Twitter](https://twitter.com/simplephplogin)**, **[Facebook](https://www.facebook.com/pages/PHP-Login-Script/461306677235868)**
