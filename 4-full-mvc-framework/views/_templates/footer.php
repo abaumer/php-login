@@ -38,7 +38,9 @@
                                     <a href="<?php echo URL; ?>login/showprofile">Show my profile</a>
                                 </li>
                                 -->
-                                
+                                <li <?php if ($this->checkForActiveController($filename, "user")) { echo ' class="active" '; } ?> >
+                                    <a href="<?php echo URL; ?>user/index">Users</a>
+                                </li>
                                 <li <?php if ($this->checkForActiveController($filename, "login")) { echo ' class="active" '; } ?> >
                                     <a href="<?php echo URL; ?>login/logout">Logout</a>
                                 </li>
