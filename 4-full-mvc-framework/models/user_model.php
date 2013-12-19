@@ -16,8 +16,7 @@ class User_Model extends Model
     public function getAllUsers()
     {
         
-        $umq = $this->db->prepare("SELECT user_id, user_name, user_email, user_active, user_account_type, user_has_avatar
-                                           FROM users");
+        $umq = $this->db->prepare("SELECT user_id, user_name, user_email, user_active, user_account_type, user_has_avatar FROM users WHERE user_active=1");
         $umq->execute();    
                 
                 return $umq->fetchAll();
@@ -79,10 +78,10 @@ class User_Model extends Model
                   && !empty($_POST['user_password_new']) ) {
             
                 // escapin' this, additionally removing everything that could be (html/javascript-) code
-                $this->new_user_name = htmlentities($_POST['user_name'], ENT_QUOTES);
-                $this->new_user_email = htmlentities($_POST['user_email'], ENT_QUOTES);
-                $this->new_user_password = htmlentities($_POST['user_password_new'], ENT_QUOTES);
-                $this->user_account_type = $_POST('user_account_type');
+                $this->user_name = htmlentities($_POST['user_name'], ENT_QUOTES);
+                $this->user_email = htmlentities($_POST['user_email'], ENT_QUOTES);
+                $this->user_password = htmlentities($_POST['user_password_new'], ENT_QUOTES);
+                $this->user_account_type = htmlentities($_POST['user_account_type'], ENT_QUOTES);
                 
                 // no need to escape as this is only used in the hash function
                 $this->user_password = $_POST['user_password_new'];
@@ -113,7 +112,7 @@ class User_Model extends Model
                     $this->user_activation_hash = sha1(uniqid(mt_rand(), true));
 
                     // write new users data into database
-                    //$query_new_user_insert = $this->db_connection->query("INSERT INTO users (user_name, user_password_hash, user_email, user_activation_hash) VALUES('".$this->user_name."', '".$this->user_password_hash."', '".$this->user_email."', '".$this->user_activation_hash."');");
+                    //$query_user_insert = $this->db_connection->query("INSERT INTO users (user_name, user_password_hash, user_email, user_activation_hash) VALUES('".$this->user_name."', '".$this->user_password_hash."', '".$this->user_email."', '".$this->user_activation_hash."');");
                     
                     $sth = $this->db->prepare("INSERT INTO users (user_name, user_password_hash, user_email, user_activation_hash, user_account_type) VALUES(:user_name, :user_password_hash, :user_email, :user_activation_hash, :user_account_type) ;");
                     $sth->execute(array(':user_name' => $this->user_name, ':user_password_hash' => $this->user_password_hash, ':user_email' => $this->user_email, ':user_activation_hash' => $this->user_activation_hash, ':user_account_type' => $this->user_account_type));                    
@@ -168,13 +167,12 @@ class User_Model extends Model
      */    
     private function sendNewVerificationEmail() {
         
-        $mail = new PHPMailer;
-
-        // please look into the config/config.php for much more info on how to use this!
-        // use SMTP or use mail()
         if (EMAIL_USE_MANDRILL) {
             if (file_exists(LIBS . 'mandrill-api-php/src/Mandrill.php')) {
                 require LIBS . 'mandrill-api-php/src/Mandrill.php'; 
+
+
+                $this->$email_body = "";
 
                 try {
                     $mandrill = new Mandrill(EMAIL_MANDRILL_APIKEY);
@@ -226,7 +224,11 @@ class User_Model extends Model
             }
 
 
-        } else { 
+        } else {
+            $mail = new PHPMailer;
+
+            // please look into the config/config.php for much more info on how to use this!
+            // use SMTP or use mail()
             if (EMAIL_USE_SMTP) {
                 
                 // Set mailer to use SMTP
@@ -254,61 +256,131 @@ class User_Model extends Model
             $mail->FromName = EMAIL_VERIFICATION_FROM_NAME;
             $mail->AddAddress($this->user_email);
             $mail->Subject = EMAIL_VERIFICATION_SUBJECT;
-            $mail->Body    = EMAIL_VERIFICATION_NEWUSER_CONTENT . EMAIL_VERIFICATION_URL.'/'.urlencode($this->user_id).'/'.urlencode($this->user_activation_hash);
+            $mail->Body    = EMAIL_VERIFICATION_NEWUSER_CONTENT . EMAIL_VERIFICATION_URL.'/'.urlencode($this->user_id).'/'.urlencode($this->user_activation_hash).'/r/nLogin Info:/r/nUsername: '.$this->user_name.'/r/nPassword: '.$this->user_password;
 
             if(!$mail->Send()) {
                 
                 $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_ERROR . $mail->ErrorInfo;
-                return false; // TEMPORARY - set to false in production
+                return true; // TEMPORARY - set to false in production
                
             } else {
                 
                 $this->errors[] = FEEDBACK_VERIFICATION_MAIL_SENDING_SUCCESSFUL;
                 return true;
+                
             }
-            $this->errors[] = "mail sending error.  Not possible to email right now.  Please ask administrator for help configuring email functionality";
-            return false; // TEMPORARY - set to false in production
         }
-        
     }
     
-    public function editSave($note_id, $note_text)
+    public function editSave()
     {
-                
-        $umq = $this->db->prepare("UPDATE note 
-                                   SET note_text = :note_text
-                                   WHERE note_id = :note_id AND user_id = :user_id;");
-        $umq->execute(array(
-            ':note_id' => $note_id,
-            ':note_text' => $note_text,
-            ':user_id' => $_SESSION['user_id']));   
+        // Make sure we're running this with info and not clearing somebody.
+        if(!$_POST) {
+            $this->errors[] = "No Update Information Sent";
+        } else if (strlen($_POST['user_name']) > 64 || strlen($_POST['user_name']) < 2) {
+            
+            $this->errors[] = FEEDBACK_USERNAME_TOO_SHORT_OR_TOO_LONG;
+
+        } elseif (!preg_match('/^[a-z\d]{2,64}$/i', $_POST['user_name'])) {
+            
+            $this->errors[] = FEEDBACK_USERNAME_DOES_NOT_FIT_PATTERN;
+            
+        } elseif (empty($_POST['user_email'])) {
+            
+            $this->errors[] = FEEDBACK_EMAIL_FIELD_EMPTY;
+            
+        } elseif (strlen($_POST['user_email']) > 64) {
+            
+            $this->errors[] = FEEDBACK_EMAIL_TOO_LONG;
+            
+        } elseif (!filter_var($_POST['user_email'], FILTER_VALIDATE_EMAIL)) {
+            
+            $this->errors[] = FEEDBACK_EMAIL_DOES_NOT_FIT_PATTERN;
         
-        $count =  $umq->rowCount();
-        if ($count == 1) {
-            return true;
         } else {
-            $this->errors[] = FEEDBACK_NOTE_EDITING_FAILED;
-            return false;
-        }                
+
+            $this->userEdit = new stdClass();
+            $this->userEdit->user_id = $_POST['user_id'];  // old $user_id;
+            $this->userEdit->user_name = $_POST['user_name'];
+            $this->userEdit->user_email = $_POST['user_email'];
+            $this->userEdit->user_account_type = $_POST['user_account_type'];
+
+
+            // Confirm User Exists
+            if($this->getUser($this->userEdit->user_id)){
+
+                $umq = $this->db->prepare("UPDATE users 
+                                            SET user_name = :user_name,
+                                                user_email = :user_email,
+                                                user_account_type = :user_account_type
+                                            WHERE user_id = :user_id;");
+                $umq->execute(array(
+                    ':user_id' => $this->userEdit->user_id,
+                    ':user_name' => $this->userEdit->user_name,
+                    ':user_email' => $this->userEdit->user_email,
+                    ':user_account_type' => $this->userEdit->user_account_type
+                    ));   
                 
-                
+                $count =  $umq->rowCount();
+                $errors = $umq->errorInfo();
+
+                if ($count == 1) {
+                    $this->errors[] = "Successfully updated: " . $this->userEdit->user_name;
+                    return true;
+                } else if ($count == 0) {
+                    $this->errors[] = FEEDBACK_USER_EDITING_NO_UPDATE_MADE;
+                    return true;
+                } else {
+                    $this->errors[] = FEEDBACK_USER_EDITING_FAILED;
+                    return false;
+                }
+            } else {
+                $this->errors[] = FEEDBACK_USER_EDITING_FAILED_NO_USER_EXISTS;
+                return false;
+            }
+        }
+        return false;               
     }
     
-    public function delete($note_id)
+    public function delete()
     {
-        $umq = $this->db->prepare("DELETE FROM note 
-                                   WHERE note_id = :note_id AND user_id = :user_id;");
-        $umq->execute(array(
-            ':note_id' => $note_id,
-            ':user_id' => $_SESSION['user_id']));   
-        
-        $count =  $umq->rowCount();
-        
-        if ($count == 1) {
-            return true;
+        if(!$_POST) {
+            $this->errors[] = "No Update Information Sent";
         } else {
-            $this->errors[] = FEEDBACK_NOTE_DELETION_FAILED;
-            return false;
-        }     
+            $this->userDelete = new stdClass();
+            $this->userDelete->user_id = $_POST['user_id'];
+            $this->userDelete->user_name = $_POST['user_name'];
+            $this->userDelete->confirmed = $_POST['confirmed'];
+        
+            // Confirm User Exists
+            if($this->getUser($this->userDelete->user_id)){
+
+                $umq = $this->db->prepare("UPDATE users 
+                                            SET user_active = :user_active
+                                            WHERE user_id = :user_id;");
+                $umq->execute(array(
+                    ':user_id' => $this->userEdit->user_id,
+                    ':user_active' => "0"
+                    ));   
+                
+                $count =  $umq->rowCount();
+                $errors = $umq->errorInfo();
+
+                if ($count == 1) {
+                    $this->errors[] = "Successfully Deleted: " . $this->userEdit->user_name;
+                    return true;
+                } else if ($count == 0) {
+                    $this->errors[] = FEEDBACK_USER_EDITING_NO_UPDATE_MADE;
+                    return true;
+                } else {
+                    $this->errors[] = FEEDBACK_USER_EDITING_FAILED;
+                    return false;
+                }
+            } else {
+                $this->errors[] = FEEDBACK_USER_EDITING_FAILED_NO_USER_EXISTS;
+                return false;
+            }
+        }
+        return false; 
     }
 }
